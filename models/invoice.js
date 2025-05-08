@@ -19,6 +19,11 @@ connect();
 
 const invoiceSchema = new mongoose.Schema({
     id: Number,
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
     date: Date,
     billing: {
         name: String,

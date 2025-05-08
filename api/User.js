@@ -31,15 +31,15 @@ router.post('/signup', (req, res) => {
             message: 'Password must be at least 6 characters long' 
         });
     } else {
-        User.findOne({ email: email }).then(user => {
+        User.findOne({ email: email }).then(async (user) => {
             if (user) {
                 return res.status(400).json({ 
                     status: 'error',
                     message: 'User already exists' 
                 });
             } else {
-                const saltRounds = 10;
-                const hashedPassword = bcrypt.hashSync(password, saltRounds);
+                const saltRounds = process.env.SALT || 10;
+                const hashedPassword = await bcrypt.hashSync(password, saltRounds);
 
                 const newUser = new User({
                     name,
@@ -102,10 +102,17 @@ router.post('/login', (req, res) => {
                         message: 'Invalid password' 
                     });
                 } else {
+                    // return res.status(200).json({ 
+                    //     status: 'success',
+                    //     message: 'Login successful',
+                    //     data: user
+                    // });
+
+                    const token = user.generateAuthToken();
                     return res.status(200).json({ 
                         status: 'success',
                         message: 'Login successful',
-                        data: user
+                        data: token
                     });
                 }
             }
